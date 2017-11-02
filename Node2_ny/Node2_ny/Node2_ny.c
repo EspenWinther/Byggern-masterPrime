@@ -12,20 +12,24 @@
 #include <stdio.h>
 #include <string.h>
 #include <util/delay.h>
+#include "control_driver.h"
 #include "UART.h"
 #include "SPI.h"
 #include "MCP2515.h"
 #include "CAN.h"
+#include "DAC.h"
 
-CAN_message *h;								//Receiver generated message
-CAN_message test;
+
+//CAN_message *h;								//Receiver generated message
+CAN_message test;							//Receiver generated message
 
  main(void)
 {
-	UartInit();
-	CAN_init();
+	UartInit();								// Initialize the UART
+	CAN_init();								// Initialize the CAN bus drivers
+	CD_init();								// Initialize the Control Driver
 
-	sei();
+	sei();									// Enable Global Interrupts
 	
 	
 	printf("Start på program\n");

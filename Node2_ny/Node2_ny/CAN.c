@@ -16,7 +16,7 @@ void CAN_init()
 	MCP_bitmod(MCP_CANINTE, 0x0F, MCP_RX_INT);				// Sets interrupt receive-register 
 	MCP_bitmod(MCP_CANCTRL,MODE_MASK,MODE_NORMAL);			// Setting MCP to loop-back mode MODE_MASK
 	_delay_us(10);
-	uint8_t status = MCP_status();
+	//uint8_t status = MCP_status();
 }
 
 void CAN_send(CAN_message * msg)

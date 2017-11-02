@@ -1,8 +1,8 @@
-/*
- * DAC.h
- *
- * Created: 02.11.2017 15:32:17
- *  Author: espeneil
- */ 
+#ifndef DAC_H_
+#define DAC_H_
 
-void DAC_send();
+void DAC_init();
+void DAC_send(unsigned char adr, unsigned char nr, unsigned char val);
+void DAC_reset(unsigned char adr);
+
+#endif

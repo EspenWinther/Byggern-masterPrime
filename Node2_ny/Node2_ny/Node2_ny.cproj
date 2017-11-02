@@ -123,6 +123,18 @@
     <Compile Include="CAN.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="control_driver.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="control_driver.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="DAC.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="DAC.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="MCP2515.c">
       <SubType>compile</SubType>
     </Compile>
@@ -135,6 +147,9 @@
     <Compile Include="PWM.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="PWM.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="setup.h">
       <SubType>compile</SubType>
     </Compile>
@@ -142,6 +157,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="SPI.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="TWI_Master.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="TWI_Master.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="UART.c">
