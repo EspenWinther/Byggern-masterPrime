@@ -20,11 +20,12 @@ uint8_t pwm_init(){
 	TCCR3B |= (1 << WGM32)|(1 << WGM33)|(1 << CS31)|(1 << CS30);
 	TCCR3B &= ~(1 << CS32);
 	
-	ICR3 = 5000;
-	set_bit(DDRE,PE3);
-	OCR3A = 375;
+	ICR3 = 5000;			// TOP value for the timer, 20 ms
+	set_bit(DDRE,PE3);		// Sets the PORTE 3 as OC3A PWM output port
+	OCR3A = 375;			// Compare value for timer, 1-2 ms
+	
 
-	input_joystick_start  = 0;
+	input_joystick_start  = 0; // this sets input_joystick_start to 0
 	input_joystick_end    = 200;
 	input_slider_start    = 0;
 	input_slider_end      = 200;
