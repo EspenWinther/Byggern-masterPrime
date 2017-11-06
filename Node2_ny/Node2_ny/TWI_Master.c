@@ -26,6 +26,7 @@
 #include <avr/io.h>              
 #include <avr/interrupt.h>
 #include "TWI_Master.h"
+#include <util/delay.h>
 
 static unsigned char TWI_buf[ TWI_BUFFER_SIZE ];    // Transceiver buffer
 static unsigned char TWI_msgSize;                   // Number of bytes to be transmitted.
@@ -53,7 +54,8 @@ Call this function to test if the TWI_ISR is busy transmitting.
 ****************************************************************************/
 unsigned char TWI_Transceiver_Busy( void )
 {
-  return ( TWCR & (1<<TWIE) );                  // IF TWI Interrupt is enabled then the Transceiver is busy
+	//printf("Busy\n");
+	return ( TWCR & (1<<TWIE) );                  // IF TWI Interrupt is enabled then the Transceiver is busy
 }
 
 /****************************************************************************
@@ -77,11 +79,12 @@ then initialize the next operation and return.
 void TWI_Start_Transceiver_With_Data( unsigned char *msg, unsigned char msgSize )
 {
   unsigned char temp;
-
+	//printf("TWI Status: %i %i %i \n", msg[0], msg[1], msg[2]);
   while ( TWI_Transceiver_Busy() );             // Wait until TWI is ready for next transmission.
 
   TWI_msgSize = msgSize;                        // Number of data to transmit.
   TWI_buf[0]  = msg[0];                         // Store slave address with R/W setting.
+  //printf("TWI Status: %x %i %i \n", msg[0], msg[1], msg[2]);
   if (!( msg[0] & (TRUE<<TWI_READ_BIT) ))       // If it is a write operation, then also copy data.
   {
     for ( temp = 1; temp < msgSize; temp++ )
@@ -93,6 +96,9 @@ void TWI_Start_Transceiver_With_Data( unsigned char *msg, unsigned char msgSize 
          (1<<TWIE)|(1<<TWINT)|                  // Enable TWI Interupt and clear the flag.
          (0<<TWEA)|(1<<TWSTA)|(0<<TWSTO)|       // Initiate a START condition.
          (0<<TWWC);                             //
+		 
+	//_delay_us(50);
+	//TWCR &= ~(1<<TWIE);
 }
 
 /****************************************************************************

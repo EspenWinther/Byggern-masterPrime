@@ -16,7 +16,7 @@ int ADC_read(char channel)
 	// remapping
 	retrieved_value = *ext_adc;
 	int val;
-	val = ((((float)(retrieved_value)-128)/127)*100);
+	val = (((float)(retrieved_value-128)/127)*100);
 	val = (int) val;
 	
 	// deadzone	

@@ -22,17 +22,18 @@ void CAN_send(CAN_message * msg)
 
 	if (Can_trans_compl())									// Check registers are available 
 	{
-		printf("Status flag: %x\n", MCP_read(MCP_TXB0CTRL));
-		uint8_t status = MCP_read(MCP_CANCTRL);
-		uint8_t status2 = MCP_read(MCP_EFLG);
+		//printf("Status flag: %x\n", MCP_read(MCP_TXB0CTRL));
+		//uint8_t status = MCP_read(MCP_CANCTRL);
+		//uint8_t status2 = MCP_read(MCP_EFLG);
 		MCP_write(MCP_TXB0SIDH, msg->id >> 3);				// Write id to id handlig regiseter (standard identifier High)
 		MCP_write(MCP_TXB0SIDL, msg->id << 5);				// Write id to Id handling register (3-3, standard identifier Low)
-		printf("ID: %i \n",msg->id);
+		//printf("ID: %i \n",msg->id);
 		MCP_write(TXB0DLC, (msg->length));
-		printf("LEN: %i \n",msg->length);					// Write length to length handling register (3-7)
+		//printf("LEN: %i \n",msg->length);					// Write length to length handling register (3-7)
 		for(unsigned char i=0; i<msg->length;i++)
 		{
 			MCP_write(TXB0D0+i,msg->data[i]);				// Write data to the data handling register (3-8). iterate through TXBnDm (n.m =1,2,3...)
+			//printf("Data: %i\n",msg->data[i]);
 		}
 
 
@@ -48,15 +49,13 @@ void CAN_send(CAN_message * msg)
 int Can_trans_compl()							// sjekker om TX buffer er ferdig med transmission (TXREQ = 0)
 {
 	uint8_t status = MCP_status();				// Saves MCP status in status
-	printf("Status flag: %x\n", MCP_read(MCP_TXB0CTRL));
+	//printf("Status flag: %x\n", MCP_read(MCP_TXB0CTRL));
 	if (test_bit(MCP_read(MCP_TXB0CTRL),3))						// Check status-register value against bit 3
 	{
-		printf("Espen\n");
 		return 0;
 	}	
 	else
 	{	
-		printf("Gaute\n");
 		return 1;
 	}
 }
@@ -79,9 +78,9 @@ void CAN_read2(CAN_message * msg)														// Reads a CAN message
 	if (1) // rxflag == 1
 	{
 		msg->id = (MCP_read(MCP_RXB0SIDH) << 3) | (MCP_read(MCP_RXB0SIDL) >> 5);		// Sets MSG ID = to what it reads on the registers 			
-		printf("s ID: %i\n",msg->id);													// Debug feature. Prints Recieved ID
+		//printf("s ID: %i\n",msg->id);													// Debug feature. Prints Recieved ID
 		msg->length = MCP_read(MCP_RXB0DLC);											// Length is set to what is read on the register 
-		printf("r length: %x\n",msg->length);											// Debug feature. Prints length 
+		//printf("r length: %x\n",msg->length);											// Debug feature. Prints length 
 		for (int i = 0; i< msg->length; i++)
 		{
 			msg->data[i] = MCP_read(MCP_RXB0D0+i);										// Data is sett to what is read on registers
@@ -104,20 +103,3 @@ ISR(INT0_vect)
 	CAN_Int_Reset(); //vect
 	}
 	
-	//void Can_loopback_test(&myMessage)							// Saved test function for loopback mode CAN msg sending
-	//{
-	//CAN_send(&myMessage);
-	//CAN_read2(&h);
-	////h.id=h.data[0];
-	//printf("h id = %d "  ,h.id  );
-	//printf("h length = %d "  , h.length  );
-	//printf("h= ");
-	//if (h.id == ident)
-	//{
-		//for (int i =0; i<8; i++)
-	//{
-	//printf("%d, ",h.data[i]);
-	//}
-	//printf("\n");
-	//}
-	//}

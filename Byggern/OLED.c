@@ -3,6 +3,7 @@
 #include <util/delay.h>
 #include "OLED.h"
 #include "fonts.h"
+#include "Game_play.h"
 
 volatile char *write_c = (char *) 0x1000;
 volatile char *write_d = (char *) 0x1200; 
@@ -63,11 +64,8 @@ int OLED_print(char *d, char font)
 	while (d[i] != '\0')
 	{
 		OLED_print_char(d[i], font); 
-		
-		//printf("%i \n",d[i]);
 		i++;
 	}
-	//printf("dette er en test");
 	return 0;
 }
 
@@ -75,21 +73,16 @@ int OLED_print(char *d, char font)
 // denne tar et aski tall, printer over rows
 int OLED_print_char(char c, char font)
 {
-	//printf("dette er en test");
 		for (int i = 0 ; i<font ; i++)
 		{
-			if (font == 4)
-			{
-				*write_d = pgm_read_byte(&font4[c-' '][i]); // better than write_d(font8[c-' '][i]);
-			}
-			else if (font == 5)
-			{
-				*write_d = pgm_read_byte(&font5[c-' '][i]); // better than write_d(font8[c-' '][i]);
-			}
-			else
-			{
+			//if (font == 5)
+			//{
+				//*write_d = pgm_read_byte(&font5[c-' '][i]); // better than write_d(font8[c-' '][i]);
+			//}
+			//else
+			//{
 				*write_d = pgm_read_byte(&font8[c-' '][i]); // better than write_d(font8[c-' '][i]);
-			}
+			//}
 		}
 	return 0;
 }
@@ -97,7 +90,6 @@ int OLED_print_char(char c, char font)
 
 void OLED_gotoline(char line)		// Input in page addressing mode, line 0-7
 {
-	//OLED_Home();
 	if ( line < 8 )
 	{
 		*write_c = (0xB0 + line);	// Page start address number (Line number)
@@ -109,7 +101,6 @@ void OLED_gotoline(char line)		// Input in page addressing mode, line 0-7
 
 void OLED_goto(char line, char col)		// Input in page addressing mode, line 0-7 
 {
-	//OLED_Home();
 	if ( line < 8 )
 	{
 		char lsb = col & 0x0F;
@@ -164,7 +155,7 @@ void OLED_menu()
 			_delay_ms(300); // delay etter vi har trykket ikke når vi skal trykke
 			
 		}
-		if (read_y() < -50)
+		else if (read_y() < -50)
 		{
 			OLED_goto(p, 0);
 			OLED_print_char(' ',5); //blank
@@ -180,27 +171,40 @@ void OLED_menu()
 		
 		}
 		
-		if (p==6 & (read_knappJoy() == 1))
-		{
-			OLED_animation();
-			OLED_menu();
-		}
+		//if (p==6 & (read_knappJoy() == 1))
+		//{
+			//OLED_animation();
+			//OLED_menu();
+		//}
 		
-		else if(0)
+		else if(read_knappJoy() == 1)
 		{
 			switch(p) 
 			{
 
 				case 2:
-				printf("caseting");
+				{
+				printf("GAME!!!!");
+				OLED_highscore();
+				}
 				break;
 				
 				case 4  :
+				{
 				printf("caseting");
+				}
+				break;
+				
+				case 6:
+				{
+					printf("Whoop-de-fucking-dooo!");
+					OLED_animation();
+					OLED_menu();
+				}
 				break;
 				
 				default :
-				printf("caseting");
+				break;
 			}
 		}
 
@@ -209,6 +213,15 @@ void OLED_menu()
 
 void OLED_highscore()
 {
+	OLED_Reset();
+	OLED_Home();
+	OLED_print("PING-PONG", 8);
+	while (!read_knappJoy())
+	{
+		Ping_Pong();	
+	}
+	OLED_menu();
+	
 }
 
 char OLED_NameScreen()

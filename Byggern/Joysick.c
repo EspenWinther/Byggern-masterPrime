@@ -5,9 +5,22 @@
 //#include <avr/stdint.h>
 #include <stdio.h>
 #include "Joystick.h"
+#include "ADC_test.h"
+#include "OLED.h"
 
 
 void calibrate(){
+	OLED_Reset();
+	OLED_Home();
+	OLED_goto(0, 10);
+	OLED_print("Vennligst roter", 8);
+	OLED_goto(2,10);
+	OLED_print("Joystick", 8);
+	OLED_goto(4,10);
+	OLED_print("Deretter:", 8);
+	OLED_goto(6,10);
+	OLED_print("Trykk Joyknapp", 8);
+	
 	int x_akse=ADC_read(0);
 	int y_akse=ADC_read(1);
 
@@ -25,7 +38,7 @@ void calibrate(){
 		printf("Rotate joystick and press butten when done\n");
 		printf("Un.cal. values: x=%d y=%d \n",x_akse,y_akse);
 	}
-	while((PINB & (1<<PINB2))){
+	while(!read_knappJoy()){
 		x_akse=ADC_read(0);
 		y_akse=ADC_read(1);
 		if(x_akse_min>x_akse){x_akse_min=x_akse;}
