@@ -1,4 +1,5 @@
 #include "setup.h"
+#define F_CPU FOSC
 #include <avr/io.h>
 #include <stdio.h>
 #include "UART.h"

@@ -1,5 +1,6 @@
 // MCP driver file: Espen 08.10.17
 #include "setup.h"
+#define F_CPU FOSC
 #include "MCP2515.h"
 #include "SPI.h"
 #include "CAN.h"

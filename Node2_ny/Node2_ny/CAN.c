@@ -1,6 +1,7 @@
 
 #include <avr/io.h>
 #include "setup.h"
+#define F_CPU FOSC
 #include "CAN.h"
 #include "MCP2515.h"
 #include <util/delay.h>
@@ -68,7 +69,7 @@ void CAN_read2(CAN_message * msg)														// Reads a CAN message
 	int i = 0;
 	if (MCP_read(MCP_CANINTF) & MCP_RX0IF) // rxflag == 1
 	{
-		_delay_ms(20);
+		_delay_us(20);
 		//int error = MCP_read(MCP_EFLG);
 		msg->id = (MCP_read(MCP_RXB0SIDH) << 3) | (MCP_read(MCP_RXB0SIDL) >> 5);		// Sets MSG ID = to what it reads on the registers											
 		msg->length = MCP_read(MCP_RXB0DLC);											// Length is set to what is read on the register

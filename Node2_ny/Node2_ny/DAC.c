@@ -7,6 +7,7 @@
 
 #include <avr/io.h>
 #include "setup.h"
+#define F_CPU FOSC
 #include "TWI_Master.h"
 #include <util/delay.h>
 #include "DAC.h"

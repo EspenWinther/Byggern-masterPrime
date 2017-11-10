@@ -1,5 +1,6 @@
 #include "pwm.h"
 #include "setup.h"
+#define F_CPU FOSC
 #include <util/delay.h>
 unsigned int input_range;
 unsigned int output_range;

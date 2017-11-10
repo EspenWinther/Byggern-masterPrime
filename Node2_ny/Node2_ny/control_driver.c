@@ -1,10 +1,12 @@
 #include <avr/io.h>
-#include <util/delay.h>
 #include "setup.h"
+#define F_CPU FOSC
+#include <util/delay.h>
 #include "control_driver.h"
 #include "DAC.h"
 #include <avr/sleep.h>
 #include <math.h>
+#include <stdlib.h>
 
 #define vel_max 100
 #define vel_min -100
@@ -13,12 +15,12 @@
 #define DAC_address 0b01010000		// 7 bit address for the DAC, 3 LSB should be connected to GND on chip
 #define DAC_number 0				// DAC number 0-3
 
-unsigned int encoder_value;
-int MSB;
-int LSB;
+int16_t encoder_value ;
+//int MSB;
+//int LSB;
 static int timer_flag;
 static int playing_flag;
-double encoder_max = 10000;
+int16_t encoder_max = 10000;
 int reference_max = 200;
 int clock_seconds;
 uint8_t counter;
@@ -33,6 +35,7 @@ int integrator_max = 300;
 
 float mean = 0; 
 
+sei();
 
 void CD_init()
 {
@@ -52,20 +55,17 @@ void CD_init()
 	CD_encoder_reset();								// reset encoder
 	CD_speed(0);									// sett start speed 
 	set_bit(MJ1,EN);								// enable motor
-	if (CD_encoder_max() > 7000)
-	{
-		encoder_max = CD_encoder_max();
-	}
-							// Find encoder max
+	encoder_max = CD_encoder_max();					// Find encoder max
 	
 	clock_seconds = 0;								
 	counter = 0;
 	CD_set_ref_pos(125);							// sett startpos to middle
 	error_sum = 0;
-		
+	
 	
 		
 }
+
 
 void CD_set_ref_pos(unsigned char pos)
 {
@@ -84,25 +84,28 @@ void CD_clk_init()
 		
 		//Enable compare match A interrupt
 		TIMSK1 |= (1 << OCIE1A);
+		
 }
 
-double CD_read_encoder()
-{
+int16_t CD_read_encoder()
+{	
+	volatile int16_t data;
 	clear_bit(MJ1, OE);
 	clear_bit(MJ1, SEL);
-	_delay_ms(200);		// egentlig 20ms
+	_delay_us(20);		
 	
-	MSB = MJ2;
+	data |= ((MJ2)<<8);
 	
 	set_bit(MJ1, SEL);
-	_delay_ms(200);		// egentlig 20ms
+	_delay_us(20);		
 	
-	LSB = MJ2;
+	data |= ((MJ2)<<0);
+	_delay_us(5);
 	
+	encoder_value += data;
+	CD_encoder_reset();
 	set_bit(MJ1, OE);
-	
-	double data = ((MSB<<8) | LSB);
-	return data;
+	return encoder_value;
 }
 
 void CD_direc(unsigned char direc)
@@ -126,7 +129,8 @@ void CD_speed(int value)
 }
 
 
-void nyPID(){
+void nyPID()
+{
 	
 }
 
@@ -152,31 +156,32 @@ void CD_velocity(int vel)
 
 unsigned char CD_pid_gain(float p,float i,float d)
 {
-	kp = p/10000;
-	ki = i/10000;
-	kd = d/10000;
+	kp = p/1000;
+	ki = i/1000;
+	kd = d/1000;
 }
+
 
 void CD_PID(reference_value)
  {
+	 printf("PIIIIIIIIID\n");
 	 	// Use PID when playing
-		 //printf("Slider PID: %i\n", reference_value);
+		 if (pid_flag){
+			 
+		 	int16_t encoder_value = CD_read_encoder();
 
-		 	double encoder_value = CD_read_encoder();
 		 	printf("Encoder %i\n", encoder_value);
-		 	 
-		 	float error;
-			double dErr;
+			printf("EncMax: %i\n", encoder_max);
+			printf("Ref: %i\n", reference_value);
+			float error;
+			float dErr;
 		 	float output; //  -100 - 100			0-100					80
-		 	//printf("Ref: %i:\n", reference_value);
-		 	//printf("Refmax: %i\n", reference_max);
-		 	//printf("Encoder: %i\n",encoder_value);
-		 	float a = ((double)encoder_value*reference_max)/encoder_max;
-		 	printf("EncMax: %d\n", encoder_max);
-			//long b = a / encoder_max;
+		 	float a = ((float)encoder_value*reference_max)/encoder_max;
+		 	
+
 			printf("a: %d\n", a);
-			//			0-200				0-10 000		200			~10 000
-		 	error =	(float)reference_value - a; // goood
+		
+		 	error =	(float)reference_value - a; 
 
 			printf("Error: %d:\n", error);
 			
@@ -187,10 +192,10 @@ void CD_PID(reference_value)
 		 	}
 		 	//if ((int) error_sum < integrator_max)
 		 	//{
-			 	error_sum += dt*error;
-				 printf("ErrorSum: %d\n",error_sum);
+			 	error_sum += (dt*counter)*error;
+				printf("ErrorSum: %d\n",error_sum);
 		 	//}
-			dErr = (error - last_error) / dt;
+			dErr = (error - last_error) / (dt*counter);
 			output = -(kp * error + ki * error_sum + kd * dErr);
 			last_error = error;
 		 	//float prop = -kp*error;
@@ -206,24 +211,20 @@ void CD_PID(reference_value)
 			 } 
 		 	 CD_velocity((int) output);
 			  //_delay_ms(15);
-			 
+		}
+		pid_flag = 0;
+		counter = 0;
  }
  
- //ISR(TIMER1_COMPA_vect)
- //{
-	 ////If the timer is on, count the score
-	 //if (timer_flag)
-	 //{
-		 //counter++;
-		 ////Running on 50Hz
-		 //if (counter >= 50)
-		 //{
-			 //counter = 0;
-			 //clock_seconds ++;
-		 //}
-	 //}
-	 //pid_flag = 1;
- //}
+ ISR(TIMER1_COMPA_vect)		
+ {
+	 printf("PRINT");
+	 //Running on 50Hz
+	counter++;
+
+	pid_flag = 1;
+	
+ }
  
  void CD_encoder_reset()
  {
@@ -232,19 +233,19 @@ void CD_PID(reference_value)
 	 set_bit(MJ1, RST);
  }
  
-int CD_encoder_max()
+int16_t CD_encoder_max()
  {
 	 printf("In find encoder max");
 	 
 	 CD_velocity(80);
-	 _delay_ms(40000);
+	 _delay_ms(3000);
 	 CD_velocity(0);
 	 _delay_ms(200);
 	 //printf("Encoder value: %d\n",CD_read_encoder());
 	 CD_encoder_reset();
 	 _delay_ms(10);
 	 CD_velocity(-80);
-	 _delay_ms(60000);
+	 _delay_ms(4000);
 	 CD_velocity(0);
 	 _delay_ms(100);
 	 //printf("\tEncoder value2: %d\n",CD_read_encoder());
@@ -258,7 +259,7 @@ int CD_encoder_max()
 	 encoder = (double) (encoder + CD_read_encoder())/2;
 	 printf("Enqaaa: %d\n", encoder);
 	 CD_velocity(80);
-	 _delay_ms(1000);
+	 _delay_ms(500);
 	 CD_velocity(0);
 	 return (encoder);
  }

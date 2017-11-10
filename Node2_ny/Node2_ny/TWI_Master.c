@@ -23,7 +23,9 @@
 *
 ****************************************************************************/
 
-#include <avr/io.h>              
+#include <avr/io.h>  
+//#include "setup.h"				// Added by me
+//#define F_CPU FOSC				// Added by me
 #include <avr/interrupt.h>
 #include "TWI_Master.h"
 #include <util/delay.h>

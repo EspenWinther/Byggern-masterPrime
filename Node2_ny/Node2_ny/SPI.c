@@ -1,4 +1,6 @@
 #include <avr/io.h>
+#include "setup.h"
+#define F_CPU FOSC
 
 
 void SPI_MasterInit(void)
