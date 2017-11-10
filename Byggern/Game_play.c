@@ -10,11 +10,13 @@
 #include "CAN.h"
 #include "ADC_test.h"
 #include "Joystick.h"
+#include <stdio.h>
 
-CAN_message myMessage;			
+CAN_message oldMessage;
+CAN_message myMessage;		
 
 void Ping_Pong()
-{
+{	
 	myMessage.id = 3;
 	myMessage.length = 7;
 	myMessage.data[0]=ADC_read(0)+100;
@@ -24,6 +26,15 @@ void Ping_Pong()
 	myMessage.data[4]=read_knappJoy();
 	myMessage.data[5]=read_knappLeft();
 	myMessage.data[6]=read_knappRight();
-	CAN_send(&myMessage);
-	_delay_ms(10);
+	
+	for (int i=0; i<7; i++){	
+								// Try to not overflow the CAN bus
+		if (myMessage.data[i] != oldMessage.data[i]){
+			CAN_send(&myMessage);
+			_delay_ms(10);
+			printf("SEnder CAN %i\n",myMessage.data[1]);
+			break;
+		}
+	}
+	oldMessage = myMessage;
 }

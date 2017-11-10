@@ -7,6 +7,7 @@
 #include "Joystick.h"
 #include "ADC_test.h"
 #include "OLED.h"
+#include <util/delay.h>
 
 
 void calibrate(){
@@ -33,7 +34,7 @@ void calibrate(){
 	printf("Rotate the joystick ");
 	
 	// Wating for user and printing none calibrated values of the joystick
-	while((-10 > x_akse> +10) & (-10 > y_akse> +10)){
+	while(((-10 > x_akse) | (x_akse > +10)) & ((-10 > y_akse) | (y_akse > +10))){
 		_delay_ms(1000);
 		printf("Rotate joystick and press butten when done\n");
 		printf("Un.cal. values: x=%d y=%d \n",x_akse,y_akse);
@@ -64,7 +65,7 @@ return ADC_read(1);
 
 char read_knappJoy()
 {
-	if(1>(PINB & (1<<PINB2))){
+	if (1 > (PINB & (1<<PINB2))){
 		return 1;
 	}
 	return 0;
@@ -73,7 +74,7 @@ char read_knappJoy()
 // Omgjør verdiene til bool 
 char read_knappLeft()
 {
-	if(1<PINB & (1<<PINB1)){
+	if ((1 < PINB) & (1<<PINB1)){
 		return 1;
 	}
 	return 0;

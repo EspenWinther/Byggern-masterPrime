@@ -1,12 +1,14 @@
 #include <avr/io.h>
 #include "setup.h"
-#define F_CPU FOSC
+//#define F_CPU FOSC
 #include <util/delay.h>
 #include "control_driver.h"
 #include "DAC.h"
 #include <avr/sleep.h>
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <avr/interrupt.h>
 
 #define vel_max 100
 #define vel_min -100
@@ -18,14 +20,14 @@
 int16_t encoder_value ;
 //int MSB;
 //int LSB;
-static int timer_flag;
-static int playing_flag;
+//static int timer_flag;
+//static int playing_flag;
 int16_t encoder_max = 10000;
 int reference_max = 200;
 int clock_seconds;
 uint8_t counter;
 uint8_t pid_flag;
-int16_t reference_value;
+//int16_t reference_value;
 float error_sum = 0;
 float last_error = 0;
 float kp;
@@ -35,12 +37,12 @@ int integrator_max = 300;
 
 float mean = 0; 
 
-sei();
 
 void CD_init()
 {
 	DAC_init();										// DAC init
-	//CD_clk_init();									// Init the Score clock
+	CD_clk_init();									// Init the Score clock
+	
 	
 	// Port H pins as Outputs
 	set_bit(DDRH, RST);
@@ -59,18 +61,17 @@ void CD_init()
 	
 	clock_seconds = 0;								
 	counter = 0;
-	CD_set_ref_pos(125);							// sett startpos to middle
+	//CD_set_ref_pos(125);							// sett startpos to middle
 	error_sum = 0;
 	
 	
-		
 }
 
 
-void CD_set_ref_pos(unsigned char pos)
-{
-	reference_value = -pos + 255;
-}
+//void CD_set_ref_pos(unsigned char pos)
+//{
+	//reference_value = -pos + 255;
+//}
 
 void CD_clk_init()
 {
@@ -154,7 +155,7 @@ void CD_velocity(int vel)
 		//printf("Velocity: %i\n",abs(vel));
 }
 
-unsigned char CD_pid_gain(float p,float i,float d)
+void CD_pid_gain(float p,float i,float d)
 {
 	kp = p/1000;
 	ki = i/1000;
@@ -162,7 +163,7 @@ unsigned char CD_pid_gain(float p,float i,float d)
 }
 
 
-void CD_PID(reference_value)
+void CD_PID(int16_t reference_value)
  {
 	 printf("PIIIIIIIIID\n");
 	 	// Use PID when playing
@@ -170,20 +171,15 @@ void CD_PID(reference_value)
 			 
 		 	int16_t encoder_value = CD_read_encoder();
 
-		 	printf("Encoder %i\n", encoder_value);
-			printf("EncMax: %i\n", encoder_max);
-			printf("Ref: %i\n", reference_value);
+		 	//printf("Encoder %i\n", encoder_value);
+			//printf("EncMax: %i\n", encoder_max);
+			//printf("Ref: %i\n", reference_value);
 			float error;
 			float dErr;
 		 	float output; //  -100 - 100			0-100					80
 		 	float a = ((float)encoder_value*reference_max)/encoder_max;
-		 	
-
-			printf("a: %d\n", a);
-		
+		 
 		 	error =	(float)reference_value - a; 
-
-			printf("Error: %d:\n", error);
 			
 		 	if (abs(error) < 3)
 		 	{
@@ -193,16 +189,11 @@ void CD_PID(reference_value)
 		 	//if ((int) error_sum < integrator_max)
 		 	//{
 			 	error_sum += (dt*counter)*error;
-				printf("ErrorSum: %d\n",error_sum);
 		 	//}
 			dErr = (error - last_error) / (dt*counter);
 			output = -(kp * error + ki * error_sum + kd * dErr);
 			last_error = error;
-		 	//float prop = -kp*error;
-		 	//float integral = 0;//- ki*error_sum;
-		 	
-		 	//output = prop + integral;
-		 	printf("Output PID: %i\n", output);
+
 			 if(output>vel_max){
 				output= vel_max;
 			 }
@@ -218,7 +209,7 @@ void CD_PID(reference_value)
  
  ISR(TIMER1_COMPA_vect)		
  {
-	 printf("PRINT");
+	 //printf("PRINT");
 	 //Running on 50Hz
 	counter++;
 
@@ -252,11 +243,11 @@ int16_t CD_encoder_max()
 	 _delay_ms(10);
 	 int16_t encoder = CD_read_encoder();
 	 _delay_ms(10);
-	 encoder = (double) (encoder + CD_read_encoder())/2;
-	 _delay_ms(10);
-	 encoder = (double) (encoder + CD_read_encoder())/2;
-	 _delay_ms(10);
-	 encoder = (double) (encoder + CD_read_encoder())/2;
+	 //encoder = (double) (encoder + CD_read_encoder())/2;
+	 //_delay_ms(10);
+	 //encoder = (double) (encoder + CD_read_encoder())/2;
+	 //_delay_ms(10);
+	 //encoder = (double) (encoder + CD_read_encoder())/2;
 	 printf("Enqaaa: %d\n", encoder);
 	 CD_velocity(80);
 	 _delay_ms(500);

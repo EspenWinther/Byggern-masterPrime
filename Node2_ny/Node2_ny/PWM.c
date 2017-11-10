@@ -1,6 +1,6 @@
 #include "pwm.h"
 #include "setup.h"
-#define F_CPU FOSC
+//#define F_CPU FOSC
 #include <util/delay.h>
 unsigned int input_range;
 unsigned int output_range;
@@ -16,7 +16,7 @@ int output_end;
 
 	//Clear OC1A (channel A) on compare match, use fast PWM, ICR1 used as TOP, prescaler (clk/64)
 	//Mode 14 ref arduino s.145
- uint8_t pwm_init(){
+ void pwm_init(){
 	TCCR3A |= (1 << WGM31)|(1 << COM3A1);
 	TCCR3A &= ~(1 << WGM30)|(1 << COM3A0);
 	TCCR3B |= (1 << WGM32)|(1 << WGM33)|(1 << CS31)|(1 << CS30);

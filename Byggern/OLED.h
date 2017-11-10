@@ -12,7 +12,7 @@ void OLED_goto(char line, char col);
 void OLED_picture(void);
 void OLED_menu(void);
 void OLED_highscore(void);
-char OLED_NameScreen(void);
+char * OLED_NameScreen(void);
 void OLED_animation(void);
 
 #endif

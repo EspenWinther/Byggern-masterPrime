@@ -5,4 +5,7 @@
 #define clear_bit(reg, bit) (reg &= ~(1 << bit))
 #define test_bit(reg, bit) (reg & (1 << bit))
 
+#define FOSC 4915200UL
+//#define F_CPU FOSC
+
 #endif

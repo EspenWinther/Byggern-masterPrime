@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <avr/io.h>
 #include "SRAM_test.h"
+#include <stdio.h>
 
 
 

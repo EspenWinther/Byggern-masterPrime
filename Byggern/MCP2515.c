@@ -3,7 +3,7 @@
 #include "SPI.h"
 #include "CAN.h"
 #include <avr/io.h>
-#include <avr/delay.h>
+#include <util/delay.h>
 void MCP_init()
 {
 	// Makes sure registers are clean and MCP in control mode

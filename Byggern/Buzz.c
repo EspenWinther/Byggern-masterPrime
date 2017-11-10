@@ -1,4 +1,5 @@
 #include <avr/io.h>
+#include "setup.h"
 #include <util/delay.h>
 
 
@@ -47,15 +48,15 @@ void buzz(unsigned int freq, int time)
 	while (time>0)
 	{
 	LED_on();
-	delayus(freq);
+	delayUS(freq);
 	LED_off();
-	delayus(freq);
+	delayUS(freq);
 	time--;
 	}
 }
 
 
-void delayus(unsigned int time)
+void delayUS(unsigned int time)
 {
 	while(time > 0)
 	{

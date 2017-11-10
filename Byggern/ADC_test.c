@@ -20,7 +20,7 @@ int ADC_read(char channel)
 	val = (int) val;
 	
 	// deadzone	
-	if(-10<val & 10>val ){
+	if((-10 < val) & (10 > val)){
 		val=0;
 	}
 	return val;

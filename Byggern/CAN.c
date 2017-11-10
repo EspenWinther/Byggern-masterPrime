@@ -3,7 +3,9 @@
 #include "setup.h"
 #include "CAN.h"
 #include "MCP2515.h"
-#include <avr/delay.h>
+#include <util/delay.h>
+#include <stdio.h>
+#include <avr/interrupt.h>
 
 
 unsigned char rxflag = 0;									// Interrupt flag variable
@@ -48,7 +50,7 @@ void CAN_send(CAN_message * msg)
 
 int Can_trans_compl()							// sjekker om TX buffer er ferdig med transmission (TXREQ = 0)
 {
-	uint8_t status = MCP_status();				// Saves MCP status in status
+	//uint8_t status = MCP_status();				// Saves MCP status in status
 	//printf("Status flag: %x\n", MCP_read(MCP_TXB0CTRL));
 	if (test_bit(MCP_read(MCP_TXB0CTRL),3))						// Check status-register value against bit 3
 	{
@@ -98,7 +100,7 @@ void CAN_read2(CAN_message * msg)														// Reads a CAN message
 
 
 ISR(INT0_vect)
-{
+	{
 	//_delay_us(10);
 	CAN_Int_Reset(); //vect
 	}

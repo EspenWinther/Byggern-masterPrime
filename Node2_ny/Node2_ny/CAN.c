@@ -1,11 +1,11 @@
 
 #include <avr/io.h>
 #include "setup.h"
-#define F_CPU FOSC
+//#define F_CPU FOSC
 #include "CAN.h"
 #include "MCP2515.h"
 #include <util/delay.h>
-
+#include <stdio.h>
 
 unsigned char rxflag = 0;									// Interrupt flag variable
 
@@ -66,7 +66,7 @@ void CAN_Int_Reset()						// Resets CAN
 
 void CAN_read2(CAN_message * msg)														// Reads a CAN message
 {
-	int i = 0;
+	
 	if (MCP_read(MCP_CANINTF) & MCP_RX0IF) // rxflag == 1
 	{
 		_delay_us(20);

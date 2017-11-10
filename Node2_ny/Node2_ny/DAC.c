@@ -7,11 +7,13 @@
 
 #include <avr/io.h>
 #include "setup.h"
-#define F_CPU FOSC
+//#define F_CPU FOSC
 #include "TWI_Master.h"
 #include <util/delay.h>
 #include "DAC.h"
 #include <avr/interrupt.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 void DAC_init()
 {
@@ -39,9 +41,10 @@ void DAC_send(unsigned char adr, unsigned char nr, unsigned char value)
 
 void DAC_reset(unsigned char adr)
 {
-	unsigned int *msg;
+	unsigned char * msg = malloc(2*sizeof(char));
 	msg[0] = (adr << 1);			// 7 MSB bit address and 1 LSB read (0) byte
 	msg[1] = 0b00010000;				// Reset command
-	TWI_Start_Transceiver_With_Data(&msg, 2);
+	TWI_Start_Transceiver_With_Data(msg, 2);
+	free (msg);
 }
 

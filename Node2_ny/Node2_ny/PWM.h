@@ -15,7 +15,7 @@
 //#define clock_scaler CLK8
 //#define clock_scaler_val 8
 
-uint8_t pwm_init();
+void pwm_init();
 //void pwm_width(float poswidth_ms);
 uint8_t pwm_set_angle(int angle,uint8_t mode);
 

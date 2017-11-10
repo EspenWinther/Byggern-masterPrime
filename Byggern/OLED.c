@@ -4,10 +4,17 @@
 #include "OLED.h"
 #include "fonts.h"
 #include "Game_play.h"
+#include "setup.h"
+#include "ADC_test.h"
+#include "Joystick.h"
+#include <stdio.h>
 
 volatile char *write_c = (char *) 0x1000;
 volatile char *write_d = (char *) 0x1200; 
 char Name[3];
+char can_flag;
+
+//sei();
 
 void init_OLED()
 {
@@ -136,8 +143,8 @@ void OLED_menu()
 	
 	
 	int p = 2;
-	while (read_knappLeft() != 1)
-	{
+	//while (read_knappLeft() != 1)
+	//{
 		
 		if (read_y() > 50)
 		{
@@ -185,7 +192,10 @@ void OLED_menu()
 				case 2:
 				{
 				printf("GAME!!!!");
-				OLED_highscore();
+				OLED_Reset();
+				OLED_Home();
+				OLED_print("PING-PONG", 8);
+
 				}
 				break;
 				
@@ -208,23 +218,16 @@ void OLED_menu()
 			}
 		}
 
-	}
+	//}
 }
 
 void OLED_highscore()
 {
-	OLED_Reset();
-	OLED_Home();
-	OLED_print("PING-PONG", 8);
-	while (!read_knappJoy())
-	{
-		Ping_Pong();	
-	}
-	OLED_menu();
+
 	
 }
 
-char OLED_NameScreen()
+char * OLED_NameScreen()
 {
 		OLED_Reset();
 		char bokstav = '@';
@@ -233,7 +236,7 @@ char OLED_NameScreen()
 		OLED_goto(4, 0);
 		OLED_print("Name:", 8);
 		int minne = 0;
-		//char Name[3];
+		char * Name;
 		OLED_goto(4, 40);
 		int p = 40;
 		while (minne <=2)
@@ -260,18 +263,17 @@ char OLED_NameScreen()
 			p = p+8;
 			_delay_ms(500);
 		}
-		if (read_knappRight() == 1 & minne == 1)
+		if ((read_knappRight() == 1) & (minne == 1))
 		{
 			OLED_goto(4, p);
 		}
-		if (read_knappRight() == 1 & minne == 2)
+		if ((read_knappRight() == 1) & ( minne == 2))
 		{
 			OLED_goto(4, p);
 
 		}
-		
 	}
-return Name;
+return &Name;
 }
 
 void OLED_animation(){
@@ -296,7 +298,6 @@ void OLED_animation(){
 	}
 	*write_c = 0x20;
 	*write_c = 0b0010;
-	return 0;
 }
 
 void OLED_picture()
@@ -318,5 +319,5 @@ void OLED_picture()
 	}
 	*write_c = 0x20;
 	*write_c = 0b0010;
-	return 0;
 }
+

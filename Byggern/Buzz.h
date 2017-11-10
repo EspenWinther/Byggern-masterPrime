@@ -114,6 +114,6 @@
 
 void buzzinit(void);
 void buzz(unsigned int freq, int time);
-void delayus(unsigned int time);
+void delayUS(unsigned int time);
 
 #endif
