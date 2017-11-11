@@ -20,11 +20,11 @@ void IR_init()
 
 int IR_read()
 {
-	int read IR_read();
-			if (read > 0){
-				return 1;
-			}else{
-				return 0;
-			}
+	int read test_bit(PINL, PL2);
+		if (read > 0){
+			return 1;
+		}else{
+			return 0;
+		}
 
 }

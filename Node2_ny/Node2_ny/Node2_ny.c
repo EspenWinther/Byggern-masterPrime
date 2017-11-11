@@ -78,7 +78,7 @@ char DAC_address = 0b01010000;					// 7 bit address for DAC
 			}
 			
 			printf("%i ejg er ute i if\n",test_bit(PINL, PL2));
-			if (IR_read() > 0){
+			if (IR_read()){
 				printf(("%i ejg er inne i if",test_bit(PINL, PL2)));
 				//printf("IR_IR_IR_IR\n");
 				_delay_ms(100);
