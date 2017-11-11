@@ -207,7 +207,6 @@ void OLED_menu()
 				
 				case 6:
 				{
-					printf("Whoop-de-fucking-dooo!");
 					OLED_animation();
 					OLED_menu();
 				}

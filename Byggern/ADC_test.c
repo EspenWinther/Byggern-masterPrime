@@ -12,7 +12,6 @@ int ADC_read(char channel)
 
 	*ext_adc = 0b0100 + channel;
 	_delay_us (50);
-	
 	// remapping
 	retrieved_value = *ext_adc;
 	int val;

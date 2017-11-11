@@ -25,21 +25,22 @@ void calibrate(){
 	int x_akse=ADC_read(0);
 	int y_akse=ADC_read(1);
 
-	int x_akse_min=-100;
-	int x_akse_max=100;
-	int y_akse_min=-100;
-	int y_akse_max=100;
+	int x_akse_min=100;
+	int x_akse_max=-100;
+	int y_akse_min=100;
+	int y_akse_max=-100;
 	int x_center = ADC_read(0);
 	int y_center = ADC_read(1);
 	printf("Rotate the joystick ");
-	
 	// Wating for user and printing none calibrated values of the joystick
 	while(((-10 > x_akse) | (x_akse > +10)) & ((-10 > y_akse) | (y_akse > +10))){
 		_delay_ms(1000);
 		printf("Rotate joystick and press butten when done\n");
-		printf("Un.cal. values: x=%d y=%d \n",x_akse,y_akse);
+		 x_akse=ADC_read(0);
+		 y_akse=ADC_read(1);
 	}
 	while(!read_knappJoy()){
+		_delay_ms(100);
 		x_akse=ADC_read(0);
 		y_akse=ADC_read(1);
 		if(x_akse_min>x_akse){x_akse_min=x_akse;}
@@ -73,8 +74,7 @@ char read_knappJoy()
 
 // Omgjør verdiene til bool 
 char read_knappLeft()
-{
-	if ((1 < PINB) & (1<<PINB1)){
+{	if ((1 < PINB) & (1<<PINB1)){
 		return 1;
 	}
 	return 0;

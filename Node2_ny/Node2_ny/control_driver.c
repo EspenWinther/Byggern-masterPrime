@@ -2,13 +2,13 @@
 #include "setup.h"
 //#define F_CPU FOSC
 #include <util/delay.h>
-#include "control_driver.h"
-#include "DAC.h"
 #include <avr/sleep.h>
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <avr/interrupt.h>
+#include "control_driver.h"
+#include "DAC.h"
 
 #define vel_max 100
 #define vel_min -100
@@ -26,7 +26,7 @@ int16_t encoder_max = 10000;
 int reference_max = 200;
 int clock_seconds;
 uint8_t counter;
-uint8_t pid_flag;
+volatile uint8_t pid_flag;
 //int16_t reference_value;
 float error_sum = 0;
 float last_error = 0;
@@ -42,7 +42,6 @@ void CD_init()
 {
 	DAC_init();										// DAC init
 	CD_clk_init();									// Init the Score clock
-	
 	
 	// Port H pins as Outputs
 	set_bit(DDRH, RST);
@@ -89,7 +88,7 @@ void CD_clk_init()
 }
 
 int16_t CD_read_encoder()
-{	
+{	printf("1\n");
 	volatile int16_t data;
 	clear_bit(MJ1, OE);
 	clear_bit(MJ1, SEL);
@@ -106,11 +105,12 @@ int16_t CD_read_encoder()
 	encoder_value += data;
 	CD_encoder_reset();
 	set_bit(MJ1, OE);
+	printf("2\n");
 	return encoder_value;
 }
 
 void CD_direc(unsigned char direc)
-{
+{printf("4\n");
 	if (direc == 1)
 	{
 		set_bit(MJ1, DIR);
@@ -119,12 +119,13 @@ void CD_direc(unsigned char direc)
 	{
 		clear_bit(MJ1, DIR);
 	}
-
+printf("5\n");
 }
 
 
 void CD_speed(int value)
 {
+	printf("6\n");
 	//printf("Speed: %i\n", value);
 	DAC_send(DAC_address, DAC_number, value);
 }
@@ -139,7 +140,7 @@ void nyPID()
 
 // FUNKER
 void CD_velocity(int vel)
-{
+{printf("3\n");
 		//encoder_value = CD_read_encoder();
 		//CD_direc((uint8_t) abs(vel));
 		if (vel > 1)
@@ -152,7 +153,8 @@ void CD_velocity(int vel)
 		}
 		
 		CD_speed(abs(vel));
-		//printf("Velocity: %i\n",abs(vel));
+		
+		printf("Velocity: %i\n",abs(vel));
 }
 
 void CD_pid_gain(float p,float i,float d)
@@ -216,6 +218,8 @@ void CD_PID(int16_t reference_value)
 	pid_flag = 1;
 	
  }
+ 
+ 
  
  void CD_encoder_reset()
  {

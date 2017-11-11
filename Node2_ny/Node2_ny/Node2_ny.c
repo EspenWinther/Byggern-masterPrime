@@ -20,6 +20,8 @@
 #include "CAN.h"
 #include "DAC.h"
 #include "pwm.h"
+#include "Solenoid.h"
+#include "IR_ball.h"
 
 
 //CAN_message *h;								//Receiver generated message
@@ -32,33 +34,56 @@ char DAC_address = 0b01010000;					// 7 bit address for DAC
 	
 	UartInit();								// Initialize the UART
 	CAN_init();								// Initialize the CAN bus drivers
-	CD_init();								// Initialize the Control Driver
+	//CD_init();								// Initialize the Control Driver
 	pwm_init();
-	sei();									// Enable Global Interrupts
+	IR_init();
+	sol_init();
+	
+	cli();
+	sei();					// Enable Global Interrupts
+	
+	_delay_ms(1);
 	
 	
 	
-	
+	volatile int shotcounter = 0;
 	
 	
 	printf("Start på program\n");
 	
     while(1)
     {
+		
 		_delay_ms(5);
 		CAN_read2(&test);
 		if (test.id < 10) // 
 		{
+			//sol_shot();
 			//printf("Node 2 = ID: %i L: %i D: %i :%i :%i :%i :%i :%i :%i \n",test.id,test.length,test.data[0],test.data[1],test.data[2],test.data[3],test.data[4],test.data[5],test.data[6]);
 			int joystick_a = -test.data[1]+200; // 0-200 -> 200-0
+			int joybtn = test.data[4];
+			
 			//int slider_a = ((float) test.data[2]*0xFF)/200; // 0-200 -> 0-0xFF
 			//int16_t slider_a = -test.data[2]+200; // 0-200 -> 200-0
 			//printf("Slider: %i\n", slider_a);
 			CD_pid_gain(1500,10000,5);
-			// pwm_set_angle(joystick_a, 1);
+			pwm_set_angle(joystick_a, 1);
+			//printf("%i \n",joystick_a );
+			//CD_PID(joystick_a);
+			sol_shot(joybtn);
 			
-			CD_PID(joystick_a);
-			printf("encoder read: %i",CD_read_encoder());
+			if (joybtn){
+				shotcounter++;
+				printf("SOL_SOL\n");
+			}
+			
+			printf("%i ejg er ute i if\n",test_bit(PINL, PL2));
+			if (IR_read() > 0){
+				printf(("%i ejg er inne i if",test_bit(PINL, PL2)));
+				//printf("IR_IR_IR_IR\n");
+				_delay_ms(100);
+			}
+			//printf("encoder read: %i",CD_read_encoder());
 			
 			//int a =CD_read_encoder();
 			//printf("EC: %i \n",a );
@@ -70,3 +95,5 @@ char DAC_address = 0b01010000;					// 7 bit address for DAC
 	
 	
 }
+
+//ISR(__vector_default){}

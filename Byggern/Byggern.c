@@ -58,7 +58,7 @@ int main(void)
 
 
 	OLED_picture();
-	_delay_ms(1000);
+	_delay_ms(200);
 	calibrate();
 	OLED_Reset();
 	OLED_NameScreen();

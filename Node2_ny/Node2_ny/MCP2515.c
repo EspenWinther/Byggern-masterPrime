@@ -6,6 +6,8 @@
 #include "CAN.h"
 #include <avr/io.h>
 #include <util/delay.h>
+
+
 void MCP_init()
 {
 	// Makes sure registers are clean and MCP in control mode
