@@ -91,16 +91,14 @@ int main(void)
 
 							while (!Game_over)
 							{
-							
-								if (can_flag > 1)
+								if (can_flag > 2)
 								{
 									CAN_read2(&in);
 									char score;
 									if (in.id == 25){
 										score = in.data[0];
 										whileplaying(score);
-										if (in.data[1] > 0)
-										{
+										if (in.data[1] > 0){
 											Game_over = 1;
 											OLED_Game_Over(score);
 											break;
@@ -111,13 +109,12 @@ int main(void)
 									can_flag = 0;
 								}
 							}
-							
 						}
 						break;
 						
 						case 4  :
 						{
-							printf("caseting");
+							printf("Highscore");
 							OLED_highscore();
 						}
 						break;

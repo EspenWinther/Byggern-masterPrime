@@ -13,7 +13,7 @@
 volatile char *write_c = (char *) 0x1000;
 volatile char *write_d = (char *) 0x1200; 
 extern char Name[3];
-volatile char can_flag;
+//volatile char can_flag;
 extern int p = 2;					//hfhsj
 
 //sei();
@@ -140,7 +140,7 @@ void OLED_menu()
 	OLED_print("Highscore", 8);
 	OLED_goto(6, 10);
 	OLED_print("Random", 8);
-	OLED_goto(2, 0);
+	OLED_goto(p, 0);
 	OLED_print_char('z'+5, 8);
 	
 	
@@ -207,20 +207,65 @@ void OLED_Game_Over(char score){
 	write_eeprom(0x10,score);
 	OLED_goto(3, 10);
 	OLED_print("GAME OVER! :-(",8);
-	_delay_ms(10000);
+	_delay_ms(5000);
 	OLED_Reset();
 }
 
 void OLED_highscore()
-{
-	char Highscore[4] = {EEPROM_read(0x00),EEPROM_read(0x01),EEPROM_read(0x02),EEPROM_read(0x03)};
+{	
+	// Prints the 
+	char Highscore[5] = {EEPROM_read(0x00),EEPROM_read(0x01),EEPROM_read(0x02),EEPROM_read(0x03),EEPROM_read(0x10)};
 	OLED_Reset();
 	OLED_Home();
-	OLED_print("Name:", 8);
-	OLED_print(&Name, 8);
+	OLED_print("HIGHSCORE LIST",8);
+	OLED_goto(3, 0);
+	OLED_print("Current:  ", 8);
+	OLED_print_char(Name[0], 8);
+	OLED_print_char(Name[1], 8);
+	OLED_print_char(Name[2], 8);
+	OLED_goto(4, 50);
 	OLED_print("Score:", 0);
-	OLED_goto(5, 50);
-	while (!read_knappLeft() & !read_knappRight()){		
+	int score = Highscore[4];
+	int digit = score % 10;
+	OLED_goto(4, 78);
+	OLED_print_char('0'+digit, 8);
+	score /= 10;
+	digit = score % 10;
+	OLED_goto(4, 70);
+	OLED_print_char('0'+digit, 8);
+	score /= 10;
+	digit = score % 10;
+	OLED_goto(4, 62);
+	OLED_print_char('0'+digit, 8);
+	
+	OLED_goto(6, 0);
+	OLED_print("All time: ", 8);
+	printf("HS: %c", Highscore[1]);
+	OLED_print_char(Highscore[1], 8);
+	OLED_print_char(Highscore[2], 8);
+	OLED_print_char(Highscore[3], 8);
+	OLED_goto(7, 50);
+	OLED_print("Score:", 0);
+	score = Highscore[0];
+	digit = score % 10;
+	OLED_goto(7, 78);
+	OLED_print_char('0'+digit, 8);
+	score /= 10;
+	digit = score % 10;
+	OLED_goto(7, 70);
+	OLED_print_char('0'+digit, 8);
+	score /= 10;
+	digit = score % 10;
+	OLED_goto(7, 62);
+	OLED_print_char('0'+digit, 8);
+	while (!read_knappLeft() & !read_knappRight()){	
+		if (read_knappLeft() & read_knappRight()){
+			write_eeprom(0x00,0x00);
+			write_eeprom(0x01,0x00);
+			write_eeprom(0x02,0x00);
+			write_eeprom(0x03,0x00);
+		}
+			
 	}
 }
 

@@ -11,8 +11,6 @@
 #define MJ2 PINK
 #define MJ1 PORTH
 
-volatile int CANcounter;
-
 void CD_init();
 //void CD_set_ref_pos(unsigned char pos);
 void CD_clk_init();
@@ -24,5 +22,7 @@ void CD_pid_gain(float p,float i,float d);
 void CD_PID(int reference_value);
 void CD_encoder_reset();
 int16_t CD_encoder_max();
+int CANcounter;
+int Scorecounter;
 
 #endif

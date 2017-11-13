@@ -66,9 +66,7 @@ void CAN_Int_Reset()						// Resets CAN
 
 void CAN_read2(CAN_message * msg)														// Reads a CAN message
 {
-	
-	if (MCP_read(MCP_CANINTF) & MCP_RX0IF) // rxflag == 1
-	{
+	if (MCP_read(MCP_CANINTF) & MCP_RX0IF){ // rxflag == 1
 		_delay_ms(10);
 		//int error = MCP_read(MCP_EFLG);
 		msg->id = (MCP_read(MCP_RXB0SIDH) << 3) | (MCP_read(MCP_RXB0SIDL) >> 5);		// Sets MSG ID = to what it reads on the registers											
@@ -81,15 +79,14 @@ void CAN_read2(CAN_message * msg)														// Reads a CAN message
 		{
 			msg->data[i] = MCP_read(MCP_RXB0D0+i);										// Data is sett to what is read on registers
 		}
-		
 		//rxflag = 0;																	// Clear intrupt flag. For later
 		MCP_bitmod(MCP_EFLG, 0xFF, 0);
 		MCP_bitmod(MCP_CANINTF, 0xFF, 0);												// clear the interrupt flag, so the receiver buffer registry can be overwritten
 	}
-	else
-	{
-		msg->id = -1;																	// Error feature. Message not received
-	}
+	//else
+	//{
+		//msg->id = -1;																	// Error feature. Message not received
+	//}
 	//printf("CAN: %i %i\n",msg->id,msg->data[1]);
 }
 /*CAN_message CAN_read2()															// Reads a CAN message
@@ -129,12 +126,12 @@ void CAN_read2(CAN_message * msg)														// Reads a CAN message
 }*/
 
 
-ISR(INT0_vect)
-	{
-	//_delay_us(10);
-	CAN_Int_Reset(); //vect
-	rxflag=1;
-	}
+//ISR(INT0_vect)
+	//{
+	////_delay_us(10);
+	//CAN_Int_Reset(); //vect
+	//rxflag=1;
+	//}
 	
 	/*void Can_loopback_test(&myMessage)							// Saved test function for loopback mode CAN msg sending
 	{

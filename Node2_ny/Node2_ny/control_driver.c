@@ -34,7 +34,8 @@ float kp;
 float kd;
 float ki;
 int integrator_max = 300;
-volatile int CANcounter = 0;
+extern int CANcounter = 0;
+extern int Scorecounter = 0;
 float mean = 0; 
 
 
@@ -206,6 +207,7 @@ void CD_PID(int16_t reference_value)
 	 //Running on 50Hz
 	counter++;
 	CANcounter++;
+	Scorecounter++;
 	pid_flag = 1;
  }
  
