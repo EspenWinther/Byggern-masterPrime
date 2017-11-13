@@ -6,7 +6,7 @@
 
 int ADC_read(char channel)
 {
-	
+	_delay_us(50);
 	volatile char *ext_adc = (char *) 0x1400; // Start address for the AAM
 	int retrieved_value = 0;
 
@@ -22,6 +22,7 @@ int ADC_read(char channel)
 	if((-10 < val) & (10 > val)){
 		val=0;
 	}
+	printf("ADC: %i\n", val);
 	return val;
 }
 

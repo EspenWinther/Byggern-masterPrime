@@ -20,7 +20,7 @@ void IR_init()
 
 int IR_read()
 {
-	int read test_bit(PINL, PL2);
+	int read = test_bit(PINL, PL2);
 		if (read > 0){
 			return 1;
 		}else{

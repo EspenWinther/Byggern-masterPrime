@@ -11,6 +11,8 @@
 #define MJ2 PINK
 #define MJ1 PORTH
 
+volatile int CANcounter;
+
 void CD_init();
 //void CD_set_ref_pos(unsigned char pos);
 void CD_clk_init();

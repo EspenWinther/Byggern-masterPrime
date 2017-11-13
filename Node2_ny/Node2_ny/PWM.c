@@ -31,7 +31,7 @@ int output_end;
 		input_slider_start    = 0;
 		input_slider_end      = 200;
 		output_start          = 250;
-		output_end            = 560;
+		output_end            = 500;
 		input_joystick_range  = input_joystick_end - input_joystick_start;
 		input_slider_range    = input_slider_end - input_slider_start;
 		output_range          = output_end - output_start;
@@ -39,7 +39,8 @@ int output_end;
 
 
 
-uint8_t pwm_set_angle(int angle, uint8_t mode){
+uint8_t pwm_set_angle(uint8_t angle, uint8_t mode){
+	//printf("Angle: %i\n", angle);
 	switch(mode)
 	{
 		case 1: //Using joystick

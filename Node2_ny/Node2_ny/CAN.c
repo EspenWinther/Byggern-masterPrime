@@ -90,7 +90,7 @@ void CAN_read2(CAN_message * msg)														// Reads a CAN message
 	{
 		msg->id = -1;																	// Error feature. Message not received
 	}
-
+	//printf("CAN: %i %i\n",msg->id,msg->data[1]);
 }
 /*CAN_message CAN_read2()															// Reads a CAN message
 {

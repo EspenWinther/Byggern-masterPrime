@@ -17,6 +17,6 @@
 
 void pwm_init();
 //void pwm_width(float poswidth_ms);
-uint8_t pwm_set_angle(int angle,uint8_t mode);
+uint8_t pwm_set_angle(uint8_t angle,uint8_t mode);
 
 #endif /* PWM_H_ */

@@ -29,12 +29,12 @@ void Ping_Pong()
 	
 	for (int i=0; i<7; i++){	
 								// Try to not overflow the CAN bus
-		if (myMessage.data[i] != oldMessage.data[i]){
+		//if (myMessage.data[i] != oldMessage.data[i]){
 			CAN_send(&myMessage);
 			_delay_ms(10);
-			printf("SEnder CAN %i\n",myMessage.data[1]);
+			printf("SEnder CAN %i %i\n",myMessage.data[0],myMessage.data[2]);
 			break;
-		}
+		//}
 	}
 	oldMessage = myMessage;
 }

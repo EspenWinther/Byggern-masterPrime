@@ -81,13 +81,13 @@ then initialize the next operation and return.
 void TWI_Start_Transceiver_With_Data( unsigned char *msg, unsigned char msgSize )
 {
   unsigned char temp;
-	printf("TWI Status: %i %i %i \n", msg[0], msg[1], msg[2]);
-	printf("er trans biizy??: %i",TWI_Transceiver_Busy());
+	//printf("TWI Status: %i %i %i \n", msg[0], msg[1], msg[2]);
+	//printf("er trans biizy??: %i",TWI_Transceiver_Busy());
   while ( TWI_Transceiver_Busy() );             // Wait until TWI is ready for next transmission.
 
   TWI_msgSize = msgSize;                        // Number of data to transmit.
   TWI_buf[0]  = msg[0];                         // Store slave address with R/W setting.
-  printf("TWI Status: %x %i %i \n", msg[0], msg[1], msg[2]);
+ // printf("TWI Status: %x %i %i \n", msg[0], msg[1], msg[2]);
   if (!( msg[0] & (TRUE<<TWI_READ_BIT) ))       // If it is a write operation, then also copy data.
   {
     for ( temp = 1; temp < msgSize; temp++ )

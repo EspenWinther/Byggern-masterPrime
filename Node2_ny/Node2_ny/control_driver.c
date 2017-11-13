@@ -34,7 +34,7 @@ float kp;
 float kd;
 float ki;
 int integrator_max = 300;
-
+volatile int CANcounter = 0;
 float mean = 0; 
 
 
@@ -88,7 +88,7 @@ void CD_clk_init()
 }
 
 int16_t CD_read_encoder()
-{	printf("1\n");
+{
 	volatile int16_t data;
 	clear_bit(MJ1, OE);
 	clear_bit(MJ1, SEL);
@@ -105,12 +105,11 @@ int16_t CD_read_encoder()
 	encoder_value += data;
 	CD_encoder_reset();
 	set_bit(MJ1, OE);
-	printf("2\n");
 	return encoder_value;
 }
 
 void CD_direc(unsigned char direc)
-{printf("4\n");
+{
 	if (direc == 1)
 	{
 		set_bit(MJ1, DIR);
@@ -119,14 +118,11 @@ void CD_direc(unsigned char direc)
 	{
 		clear_bit(MJ1, DIR);
 	}
-printf("5\n");
 }
 
 
 void CD_speed(int value)
 {
-	printf("6\n");
-	//printf("Speed: %i\n", value);
 	DAC_send(DAC_address, DAC_number, value);
 }
 
@@ -140,21 +136,14 @@ void nyPID()
 
 // FUNKER
 void CD_velocity(int vel)
-{printf("3\n");
-		//encoder_value = CD_read_encoder();
-		//CD_direc((uint8_t) abs(vel));
-		if (vel > 1)
-		{
-			CD_direc(1);
-		}
-		else
-		{
-			CD_direc(0);
-		}
-		
-		CD_speed(abs(vel));
-		
-		printf("Velocity: %i\n",abs(vel));
+{
+	if (vel > 1){
+		CD_direc(1);
+	}
+	else{
+		CD_direc(0);
+	}
+	CD_speed(abs(vel));
 }
 
 void CD_pid_gain(float p,float i,float d)
@@ -167,7 +156,6 @@ void CD_pid_gain(float p,float i,float d)
 
 void CD_PID(int16_t reference_value)
  {
-	 printf("PIIIIIIIIID\n");
 	 	// Use PID when playing
 		 if (pid_flag){
 			 
@@ -214,9 +202,8 @@ void CD_PID(int16_t reference_value)
 	 //printf("PRINT");
 	 //Running on 50Hz
 	counter++;
-
+	CANcounter++;
 	pid_flag = 1;
-	
  }
  
  

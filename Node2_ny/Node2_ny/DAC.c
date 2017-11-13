@@ -12,15 +12,14 @@
 #include <avr/interrupt.h>
 #include <stdio.h>
 #include <stdlib.h>
-//#include "TWI_Master.h"
-#include "TWIlib.h"
+#include "TWI_Master.h"
 #include "DAC.h"
 
 
 void DAC_init()
 {
-	//TWI_Master_Initialise();
-	TWIInit();
+	TWI_Master_Initialise();
+
 	DDRD |= (PD0<<1) | (PD1<<1);
 	//PORTD |= (PD0<<1) | (PD1<<1);
 	sei();
@@ -36,11 +35,9 @@ void DAC_send(unsigned char adr, unsigned char nr, unsigned char value)
 	msg[2] = value;						// Value to put on the chosen DAC
 	//printf("Data: %i %i \n",msg[2], value);
 	_delay_us(50);
-	//TWI_Start_Transceiver_With_Data(msg, 3);
-	TWITransmitData(msg,3,1);
+	TWI_Start_Transceiver_With_Data(msg, 3);
 	_delay_us(50);
 	free (msg);
-	printf("7\n");
 }
 
 void DAC_reset(unsigned char adr)
@@ -48,8 +45,8 @@ void DAC_reset(unsigned char adr)
 	unsigned char * msg = malloc(2*sizeof(char));
 	msg[0] = (adr << 1);			// 7 MSB bit address and 1 LSB read (0) byte
 	msg[1] = 0b00010000;				// Reset command
-	//TWI_Start_Transceiver_With_Data(msg, 2);
-	TWITransmitData(msg,3,1);
+	TWI_Start_Transceiver_With_Data(msg, 2);
+
 	free (msg);
 }
 
