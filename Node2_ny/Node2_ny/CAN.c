@@ -6,6 +6,7 @@
 #include "MCP2515.h"
 #include <util/delay.h>
 #include <stdio.h>
+#include <avr/interrupt.h>
 
 unsigned char rxflag = 0;									// Interrupt flag variable
 
@@ -26,6 +27,7 @@ void CAN_send(CAN_message * msg)
 
 	if (Can_trans_compl())									// Check registers are available 
 	{
+		_delay_ms(10);
 		MCP_write(MCP_TXB0SIDH, msg->id >> 3);				// Write id to id handling register (standard identifier High)
 		MCP_write(MCP_TXB0SIDL, msg->id << 5);				// Write id to Id handling register (3-3, standard identifier Low)
 		MCP_write(TXB0DLC, (msg->length));					// Write length to length handling register (3-7)
@@ -46,9 +48,7 @@ void CAN_send(CAN_message * msg)
 
 int Can_trans_compl()							// sjekker om TX buffer er ferdig med transmission (TXREQ = 0)
 {
-	uint8_t status = MCP_status();				// Saves MCP status in status
-	
-	if (test_bit(status,3))						// Check status-register value against 3
+	if (test_bit(MCP_read(MCP_TXB0CTRL),3))						// Check status-register value against bit 3
 	{
 		return 0;
 	}	
@@ -69,7 +69,7 @@ void CAN_read2(CAN_message * msg)														// Reads a CAN message
 	
 	if (MCP_read(MCP_CANINTF) & MCP_RX0IF) // rxflag == 1
 	{
-		_delay_us(20);
+		_delay_ms(10);
 		//int error = MCP_read(MCP_EFLG);
 		msg->id = (MCP_read(MCP_RXB0SIDH) << 3) | (MCP_read(MCP_RXB0SIDL) >> 5);		// Sets MSG ID = to what it reads on the registers											
 		msg->length = MCP_read(MCP_RXB0DLC);											// Length is set to what is read on the register
@@ -129,12 +129,12 @@ void CAN_read2(CAN_message * msg)														// Reads a CAN message
 }*/
 
 
-//ISR(INT0_vect)
-	//{
-	////_delay_us(10);
-	////CAN_Int_Reset(); //vect
-	//rxflag=1;
-	//}
+ISR(INT0_vect)
+	{
+	//_delay_us(10);
+	CAN_Int_Reset(); //vect
+	rxflag=1;
+	}
 	
 	/*void Can_loopback_test(&myMessage)							// Saved test function for loopback mode CAN msg sending
 	{

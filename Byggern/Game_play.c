@@ -26,15 +26,13 @@ void Ping_Pong()
 	myMessage.data[4]=read_knappJoy();
 	myMessage.data[5]=read_knappLeft();
 	myMessage.data[6]=read_knappRight();
-	
-	for (int i=0; i<7; i++){	
-								// Try to not overflow the CAN bus
-		//if (myMessage.data[i] != oldMessage.data[i]){
+	for (int i=0; i<7; i++){
+		//Try to not overflow the CAN bus
+		if (myMessage.data[i] != oldMessage.data[i]){
 			CAN_send(&myMessage);
 			_delay_ms(10);
-			printf("SEnder CAN %i %i\n",myMessage.data[0],myMessage.data[2]);
 			break;
-		//}
+		}
 	}
 	oldMessage = myMessage;
 }

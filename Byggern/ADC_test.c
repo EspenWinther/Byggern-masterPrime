@@ -22,7 +22,6 @@ int ADC_read(char channel)
 	if((-10 < val) & (10 > val)){
 		val=0;
 	}
-	printf("ADC: %i\n", val);
 	return val;
 }
 

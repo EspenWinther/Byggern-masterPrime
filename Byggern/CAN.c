@@ -14,8 +14,10 @@ unsigned char rxflag = 0;									// Interrupt flag variable
 void CAN_init()
 {
 	MCP_init();
-	MCP_bitmod(MCP_CANINTE, 0x0F, 0x01);					// Sets interrupt receive-register 
-	MCP_bitmod(MCP_CANCTRL,MODE_MASK,MODE_NORMAL);		// Setting MCP to loop-back mode MODE_MASK
+	MCP_bitmod(MCP_RXB0CTRL, 0xF0, 0x60);					// Receive Buffer Masks OFF, 0b01100000
+	MCP_bitmod(MCP_CANINTE, 0x0F, MCP_RX_INT);				// Sets interrupt receive-register
+	MCP_bitmod(MCP_CANCTRL,MODE_MASK,MODE_NORMAL);			// Setting MCP to loop-back mode MODE_MASK
+	_delay_us(10);
 }
 
 void CAN_send(CAN_message * msg)
@@ -62,38 +64,33 @@ void CAN_Int_Reset()						// Resets CAN
 
 void CAN_read2(CAN_message * msg)														// Reads a CAN message
 {
-	int i = 0;
-	while (!(MCP_status() & 0x01))														// Wait if status not clear
-	{
-		i++;
-		printf("Venter på melding\n");
-		_delay_ms(10);
-	}
-	if (1) // rxflag == 1
+	if (MCP_read(MCP_CANINTF) & MCP_RX0IF) // rxflag == 1
 	{
 		msg->id = (MCP_read(MCP_RXB0SIDH) << 3) | (MCP_read(MCP_RXB0SIDL) >> 5);		// Sets MSG ID = to what it reads on the registers 			
-		//printf("s ID: %i\n",msg->id);													// Debug feature. Prints Recieved ID
 		msg->length = MCP_read(MCP_RXB0DLC);											// Length is set to what is read on the register 
-		//printf("r length: %x\n",msg->length);											// Debug feature. Prints length 
+		if(msg->length > 8){
+			msg->length = 8;
+		}
 		for (int i = 0; i< msg->length; i++)
 		{
 			msg->data[i] = MCP_read(MCP_RXB0D0+i);										// Data is sett to what is read on registers
 		}
 												
-		//rxflag = 0;																	// Clear intrupt flag. For later
+		MCP_bitmod(MCP_EFLG, 0xFF, 0);												// Clear intrupt flag. For later
 		MCP_bitmod(MCP_CANINTF, 0x01, 0);										// clear the interrupt flag, so the receiver buffer registry can be overwritten
 	}
-	else
-	{
-		msg->id = -1;																	// Error feature. Message not received
-	}	
+	//else
+	//{
+		//msg->id = -1;																	// Error feature. Message not received
+		//printf("Error");
+	//}	
 
 }
 
 
-ISR(INT0_vect)
-	{
-	//_delay_us(10);
-	CAN_Int_Reset(); //vect
-	}
+//ISR(INT0_vect)
+	//{
+	////_delay_us(10);
+	//CAN_Int_Reset(); //vect
+	//}
 	

@@ -3,16 +3,18 @@
 #include <util/delay.h>
 #include "OLED.h"
 #include "fonts.h"
-#include "Game_play.h"
 #include "setup.h"
 #include "ADC_test.h"
 #include "Joystick.h"
 #include <stdio.h>
+#include "eeprom.h"
+
 
 volatile char *write_c = (char *) 0x1000;
 volatile char *write_d = (char *) 0x1200; 
-char Name[3];
-char can_flag;
+extern char Name[3];
+volatile char can_flag;
+extern int p = 2;					//hfhsj
 
 //sei();
 
@@ -129,28 +131,27 @@ void OLED_menu()
 	OLED_Reset();
 	OLED_Home();
 	OLED_goto(0, 105);
-	OLED_print(Name, 8);
+	OLED_print(&Name, 8);
 	OLED_goto(0,0);
 	OLED_print("PokePong!", 8);
 	OLED_goto(2, 10);
-	OLED_print("Ping-Pong:", 5);
+	OLED_print("Ping-Pong", 8);
 	OLED_goto(4, 10);
-	OLED_print("Highscore:", 5);
+	OLED_print("Highscore", 8);
 	OLED_goto(6, 10);
-	OLED_print("Random knapp", 5);
+	OLED_print("Random", 8);
 	OLED_goto(2, 0);
-	OLED_print_char('~'+1, 5);
+	OLED_print_char('z'+5, 8);
 	
 	
-	int p = 2;
-	//while (read_knappLeft() != 1)
-	//{
-		
+	
+	while (!read_knappJoy())
+	{
 		if (read_y() > 50)
 		{
 			// Blanker forrige
 			OLED_goto(p, 0);
-			OLED_print_char(' ', 5);
+			OLED_print_char(' ', 8);
 			p=p-2;
 			if(p<2)
 			{
@@ -158,75 +159,72 @@ void OLED_menu()
 			}
 			// skriver pil
 			OLED_goto(p, 0);
-			OLED_print_char('~'+1, 5);
+			OLED_print_char('z'+5, 8);
 			_delay_ms(300); // delay etter vi har trykket ikke når vi skal trykke
 			
 		}
 		else if (read_y() < -50)
 		{
 			OLED_goto(p, 0);
-			OLED_print_char(' ',5); //blank
+			OLED_print_char(' ',8); //blank
 			p=p+2;
 			if(p>6)
 			{
 				p=2;
 			}
 			OLED_goto(p, 0);
-			OLED_print_char('~'+1, 5);
+			OLED_print_char('z'+5, 8);
 			_delay_ms(300);// delay etter vi har trykket ikke når vi skal trykke
-		
-		
 		}
-		
-		//if (p==6 & (read_knappJoy() == 1))
-		//{
-			//OLED_animation();
-			//OLED_menu();
-		//}
-		
-		else if(read_knappJoy() == 1)
-		{
-			switch(p) 
-			{
+	}
+}
 
-				case 2:
-				{
-				printf("GAME!!!!");
-				OLED_Reset();
-				OLED_Home();
-				OLED_print("PING-PONG", 8);
 
-				}
-				break;
-				
-				case 4  :
-				{
-				printf("caseting");
-				}
-				break;
-				
-				case 6:
-				{
-					OLED_animation();
-					OLED_menu();
-				}
-				break;
-				
-				default :
-				break;
-			}
-		}
+void whileplaying(char score){
+	OLED_Home();
+	OLED_goto(5, 10);
+	OLED_print("Score: ", 8);
+	int digit = score % 10;
+	OLED_goto(5, 78);
+	OLED_print_char('0'+digit, 8);
+	score /= 10;
+	digit = score % 10;
+	OLED_goto(5, 70);
+	OLED_print_char('0'+digit, 8);
+	score /= 10;
+	digit = score % 10;
+	OLED_goto(5, 62);
+	OLED_print_char('0'+digit, 8);
+}
 
-	//}
+void OLED_Game_Over(char score){
+	if (EEPROM_read(0x00) < score){
+		write_eeprom(0x00,score);
+		write_eeprom(0x01,Name[0]);
+		write_eeprom(0x02,Name[1]);
+		write_eeprom(0x03,Name[2]);
+	}
+	write_eeprom(0x10,score);
+	OLED_goto(3, 10);
+	OLED_print("GAME OVER! :-(",8);
+	_delay_ms(10000);
+	OLED_Reset();
 }
 
 void OLED_highscore()
 {
-
-	
+	char Highscore[4] = {EEPROM_read(0x00),EEPROM_read(0x01),EEPROM_read(0x02),EEPROM_read(0x03)};
+	OLED_Reset();
+	OLED_Home();
+	OLED_print("Name:", 8);
+	OLED_print(&Name, 8);
+	OLED_print("Score:", 0);
+	OLED_goto(5, 50);
+	while (!read_knappLeft() & !read_knappRight()){		
+	}
 }
 
-char * OLED_NameScreen()
+void OLED_NameScreen()
 {
 		OLED_Reset();
 		char bokstav = '@';
@@ -235,7 +233,7 @@ char * OLED_NameScreen()
 		OLED_goto(4, 0);
 		OLED_print("Name:", 8);
 		int minne = 0;
-		char * Name;
+		//* Name;
 		OLED_goto(4, 40);
 		int p = 40;
 		while (minne <=2)
@@ -243,18 +241,19 @@ char * OLED_NameScreen()
 			
 		if (read_y() > 50)
 		{
-				OLED_goto(4, p);
-				bokstav++;
-				OLED_print_char(bokstav, 8);
-				_delay_ms(250);
+			OLED_goto(4, p);
+			bokstav++;
+			OLED_print_char(bokstav, 8);
+			_delay_ms(250);
 		}
-		if (read_y() < -50)
+		else if (read_y() < -50)
 		{
 			OLED_goto(4, p);
 			bokstav--;
 			OLED_print_char(bokstav, 8);
 			_delay_ms(250);
 		}
+		
 		if (read_knappRight() == 1)
 		{
 			Name[minne] = bokstav;
@@ -272,7 +271,6 @@ char * OLED_NameScreen()
 
 		}
 	}
-return &Name;
 }
 
 void OLED_animation(){
@@ -299,24 +297,24 @@ void OLED_animation(){
 	*write_c = 0b0010;
 }
 
-void OLED_picture()
-{
-	OLED_Home();
-	OLED_goto(ADC_read(0)/12,ADC_read(1)/2);
-	*write_c = 0x20;
-	*write_c = 0b0001;
-	for (int i = 0 ; i<8*128 ; i++)
-	{
-		char a = pgm_read_byte(&Pokeball[i]); // better than write_d(font8[c-' '][i]);
-		
-		// Inverting the bytes
-		a = ((a>>1) & 0x55) | ((a<<1) & 0xaa);
-		a = ((a>>2) & 0x33) | ((a<<2) & 0xcc);
-		a = ((a>>4) & 0x0f) | ((a<<4) & 0xf0);
-		// Inverting the bytes
-		*write_d = a;
-	}
-	*write_c = 0x20;
-	*write_c = 0b0010;
-}
+//void OLED_picture()
+//{
+	//OLED_Home();
+	//OLED_goto(ADC_read(0)/12,ADC_read(1)/2);
+	//*write_c = 0x20;
+	//*write_c = 0b0001;
+	//for (int i = 0 ; i<8*128 ; i++)
+	//{
+		//char a = pgm_read_byte(&Pokeball[i]); // better than write_d(font8[c-' '][i]);
+		//
+		//// Inverting the bytes
+		//a = ((a>>1) & 0x55) | ((a<<1) & 0xaa);
+		//a = ((a>>2) & 0x33) | ((a<<2) & 0xcc);
+		//a = ((a>>4) & 0x0f) | ((a<<4) & 0xf0);
+		//// Inverting the bytes
+		//*write_d = a;
+	//}
+	//*write_c = 0x20;
+	//*write_c = 0b0010;
+//}
 

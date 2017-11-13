@@ -151,6 +151,9 @@ void CD_pid_gain(float p,float i,float d)
 	kp = p/1000;
 	ki = i/1000;
 	kd = d/1000;
+		//kp = 5;
+		//ki = 5;
+
 }
 
 

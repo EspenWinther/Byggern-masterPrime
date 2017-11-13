@@ -25,15 +25,18 @@
 #include "CAN.h"
 #include "Game_play.h"
 
+volatile char Game_over = 0;
 volatile char can_flag = 0;
 
 int main(void)
 {
+	
 	DDRD  = 0xFF;
-	DDRB = 0b00011011;				//Output, input på 0-2
-	PORTB = 0xFF;					//pull-up og høy ut
+	DDRB = 0b00011000;				//Output, input på 0-2
+	PORTB = 0b00000100;					//pull-up pin2
 	
 	UartInit();
+	printf("start på program \n");
 	//SRAM_init();
 	ADC_init();
 	init_OLED();
@@ -57,27 +60,78 @@ int main(void)
 	sei();
 
 
-	OLED_picture();
-	_delay_ms(200);
 	calibrate();
 	OLED_Reset();
 	OLED_NameScreen();
-	OLED_menu();
+	
 			
-	CAN_message myMessage;				//test message
+	//CAN_message myMessage;				//test message
 	printf("Start på program\n");
-	CAN_message h;						//Receiver generated message
+	CAN_message in;						//Receiver generated message
+	
     
 	
 	while(1)
     {
 		
-		if (can_flag)
-		{
-			Ping_Pong();
-			_delay_ms(10);
-			can_flag = 0;
-		}
+		OLED_menu();
+		// MENY STUKTUR
+				//if(read_knappJoy() == 1)
+				//{
+					switch(p)
+					{
+						case 2:
+						{
+							Game_over = 0;
+							OLED_Reset();
+							OLED_Home();
+							OLED_print("PING-PONG", 8);
+							OLED_goto(0, 105);
+							OLED_print(&Name, 8);
+
+							while (!Game_over)
+							{
+							
+								if (can_flag > 1)
+								{
+									CAN_read2(&in);
+									char score;
+									if (in.id == 25){
+										score = in.data[0];
+										whileplaying(score);
+										if (in.data[1] > 0)
+										{
+											Game_over = 1;
+											OLED_Game_Over(score);
+											break;
+										}
+											_delay_ms(5);
+									}
+									Ping_Pong();				// HER SENDES DET EN MELDING
+									can_flag = 0;
+								}
+							}
+							
+						}
+						break;
+						
+						case 4  :
+						{
+							printf("caseting");
+							OLED_highscore();
+						}
+						break;
+						
+						case 6:
+						{
+							OLED_animation();
+						}
+						break;
+						
+						default :
+						break;
+					}
+				//}
 
 	
 
@@ -90,5 +144,5 @@ int main(void)
 ISR(TIMER1_COMPA_vect)
 {	
 	// Enable sending of joystick data
-	can_flag = 1;
+	can_flag++;
 }

@@ -4,11 +4,17 @@
 #include <avr/sleep.h>
 //#include <avr/stdint.h>
 #include <stdio.h>
+#include "setup.h"
 #include "Joystick.h"
 #include "ADC_test.h"
 #include "OLED.h"
 #include <util/delay.h>
 
+
+void joy_init()
+{
+	
+}
 
 void calibrate(){
 	OLED_Reset();
@@ -54,12 +60,12 @@ void calibrate(){
 }
 
 
-char read_y()
+int8_t read_y()
 {
 return ADC_read(0);
 }
 
-char read_x()
+int8_t read_x()
 {
 return ADC_read(1);
 }
@@ -74,7 +80,8 @@ char read_knappJoy()
 
 // Omgjør verdiene til bool 
 char read_knappLeft()
-{	if ((1 < PINB) & (1<<PINB1)){
+{	
+	if (test_bit(PINB, PINB1)){
 		return 1;
 	}
 	return 0;
@@ -83,7 +90,7 @@ char read_knappLeft()
 
 char read_knappRight()
 {
-	if(PINB & (1<<PINB0)){
+	if(test_bit(PINB, PINB0)){
 		return 1;
 	}
 	return 0;		
