@@ -8,7 +8,7 @@
 #include "Joystick.h"
 #include <stdio.h>
 #include "eeprom.h"
-
+#include "Buzz.h"
 
 volatile char *write_c = (char *) 0x1000;
 volatile char *write_d = (char *) 0x1200; 
@@ -148,7 +148,8 @@ void OLED_menu()
 	while (!read_knappJoy())
 	{
 		if (read_y() > 50)
-		{
+		{	
+			buzz(100,5);
 			// Blanker forrige
 			OLED_goto(p, 0);
 			OLED_print_char(' ', 8);
@@ -162,9 +163,12 @@ void OLED_menu()
 			OLED_print_char('z'+5, 8);
 			_delay_ms(300); // delay etter vi har trykket ikke når vi skal trykke
 			
+			
 		}
 		else if (read_y() < -50)
 		{
+			
+			buzz(100,5);
 			OLED_goto(p, 0);
 			OLED_print_char(' ',8); //blank
 			p=p+2;
@@ -286,6 +290,7 @@ void OLED_NameScreen()
 			
 		if (read_y() > 50)
 		{
+			buzz(100,5);
 			OLED_goto(4, p);
 			bokstav++;
 			OLED_print_char(bokstav, 8);
@@ -293,6 +298,7 @@ void OLED_NameScreen()
 		}
 		else if (read_y() < -50)
 		{
+			buzz(100,5);
 			OLED_goto(4, p);
 			bokstav--;
 			OLED_print_char(bokstav, 8);
@@ -341,25 +347,4 @@ void OLED_animation(){
 	*write_c = 0x20;
 	*write_c = 0b0010;
 }
-
-//void OLED_picture()
-//{
-	//OLED_Home();
-	//OLED_goto(ADC_read(0)/12,ADC_read(1)/2);
-	//*write_c = 0x20;
-	//*write_c = 0b0001;
-	//for (int i = 0 ; i<8*128 ; i++)
-	//{
-		//char a = pgm_read_byte(&Pokeball[i]); // better than write_d(font8[c-' '][i]);
-		//
-		//// Inverting the bytes
-		//a = ((a>>1) & 0x55) | ((a<<1) & 0xaa);
-		//a = ((a>>2) & 0x33) | ((a<<2) & 0xcc);
-		//a = ((a>>4) & 0x0f) | ((a<<4) & 0xf0);
-		//// Inverting the bytes
-		//*write_d = a;
-	//}
-	//*write_c = 0x20;
-	//*write_c = 0b0010;
-//}
 

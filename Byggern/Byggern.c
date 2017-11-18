@@ -38,6 +38,7 @@ int main(void)
 	UartInit();
 	printf("start på program \n");
 	//SRAM_init();
+	buzzinit();
 	ADC_init();
 	init_OLED();
 	CAN_init();
@@ -73,7 +74,6 @@ int main(void)
 	
 	while(1)
     {
-		
 		OLED_menu();
 		// MENY STUKTUR
 				//if(read_knappJoy() == 1)
@@ -100,10 +100,11 @@ int main(void)
 										whileplaying(score);
 										if (in.data[1] > 0){
 											Game_over = 1;
+											death_sfx();
 											OLED_Game_Over(score);
 											break;
 										}
-											_delay_ms(5);
+									Shoot_sfx();				//	Plunger sound effect 
 									}
 									Ping_Pong();				// HER SENDES DET EN MELDING
 									can_flag = 0;
