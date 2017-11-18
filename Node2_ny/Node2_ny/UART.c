@@ -39,18 +39,3 @@ void USART_Transmit( unsigned char data )
 	UDR0 = data;
 	}
 
-
-	
-//}
-//void UartInit(){
-	////Set Baud rate 9600
-	//UBRR0H = (unsigned char)(MYUBRR>>8);	// Setter de 8 mest signifikante bitene
-	//UBRR0L = (unsigned char)(MYUBRR);	// Setter de 8 minst signifikante bitene
-	//// Enable receiver and transmitter
-	//UCSR1B = (1<<RXEN1) | (1<<TXEN1);
-	//// drame format 8data, 2stopbit
-	//UCSR1C = (1<<USBS1) | (1<<USBS0) | (3<<UCSZ00);
-	//fdevopen(&USART_Transmit, &USART_Receive);
-	//
-//}
-

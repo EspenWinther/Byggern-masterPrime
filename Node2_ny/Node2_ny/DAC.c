@@ -1,10 +1,3 @@
-/*
- * DAC.c
- *
- * Created: 02.11.2017 15:32:02
- *  Author: espeneil
- */ 
-
 #include <avr/io.h>
 #include "setup.h"
 //#define F_CPU FOSC
@@ -29,11 +22,9 @@ void DAC_send(unsigned char adr, unsigned char nr, unsigned char value)
 {
 	unsigned char * msg = malloc(3*sizeof(char));
 	msg[0] = adr;					// 7 MSB bit address and 1 LSB chip read (0) byte 
-	//printf("Address: %x\n",msg[0]);
 	msg[1] = nr;						// Adress for DAC 0-3, DAC0 = 0
 	//printf("Nr: %x\n",msg[1]);
 	msg[2] = value;						// Value to put on the chosen DAC
-	//printf("Data: %i %i \n",msg[2], value);
 	_delay_us(50);
 	TWI_Start_Transceiver_With_Data(msg, 3);
 	_delay_us(50);
